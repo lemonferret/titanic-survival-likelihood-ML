@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
-
+#test
 def readdata():
 	data = pd.read_csv("train.csv", delimiter=',', skiprows=0)
 
