@@ -50,34 +50,46 @@ def p_class_sex(surv, pclass, sex):
 	return Pf, Pm 
 	
 def p_age(surv, age):
-	P = np.transpose(np.array([[0]*100, [0]*100, [0]*100])) #survived, all
+	P = np.transpose(np.array([range(0, 121, 1), [0]*121, [0]*121])) #age [y], survived, all
+	Pbaby = np.transpose(np.array([[0]*12, [0]*12, [0]*12])) #baby age [months], survived, all
+	
 	for i, n in enumerate(age):
-		print(age)
-	return P #survived, all
+		if n>=1.0: #over 1 y olds
+			try:
+				P[round(n-1), 2] += 1
+				if surv[i]==1: P[round(n-1), 1] += 1
+			except:
+				pass
+		else: #babies
+			pass
+	return P #age, survived, all
 	
 def main():
 	pid, surv, pclass, name, sex, age, sib, parch, ticket, fare, cabin, embark = readdata()
 	P_CLASS = p_pclass(surv, pclass)
-	print("\nLikelihood of survival in 1. class: " + str(P_CLASS[0, 1]/P_CLASS[0, 2]))
-	print("Likelihood of survival in 2. class: " + str(P_CLASS[1, 1]/P_CLASS[1, 2]))
-	print("Likelihood of survival in 3. class: " + str(P_CLASS[2, 1]/P_CLASS[2, 2]))
+	#print("\nLikelihood of survival in 1. class: " + str(P_CLASS[0, 1]/P_CLASS[0, 2]))
+	#print("Likelihood of survival in 2. class: " + str(P_CLASS[1, 1]/P_CLASS[1, 2]))
+	#print("Likelihood of survival in 3. class: " + str(P_CLASS[2, 1]/P_CLASS[2, 2]))
 	P_SEX = p_sex(surv, sex)
-	print("\nLikelihood of survival F: " + str(P_SEX[0, 0]/P_SEX[0, 1]))
-	print("Likelihood of survival M: " + str(P_SEX[1, 0]/P_SEX[1, 1]))
+	#print("\nLikelihood of survival F: " + str(P_SEX[0, 0]/P_SEX[0, 1]))
+	#print("Likelihood of survival M: " + str(P_SEX[1, 0]/P_SEX[1, 1]))
 	P_CLASS_SEX_F, P_CLASS_SEX_M = p_class_sex(surv, pclass, sex)
-	print("\nLikelihood of survival F class 1: " + str(P_CLASS_SEX_F[0, 1]/P_CLASS_SEX_F[0, 2]))
-	print("Likelihood of survival F class 2: " + str(P_CLASS_SEX_F[1, 1]/P_CLASS_SEX_F[1, 2]))
-	print("Likelihood of survival F class 3: " + str(P_CLASS_SEX_F[2, 1]/P_CLASS_SEX_F[2, 2]))
-	print("Likelihood of survival M class 1: " + str(P_CLASS_SEX_M[0, 1]/P_CLASS_SEX_M[0, 2]))
-	print("Likelihood of survival M class 2: " + str(P_CLASS_SEX_M[1, 1]/P_CLASS_SEX_M[1, 2]))
-	print("Likelihood of survival M class 3: " + str(P_CLASS_SEX_M[2, 1]/P_CLASS_SEX_M[2, 2]))
+	#print("\nLikelihood of survival F class 1: " + str(P_CLASS_SEX_F[0, 1]/P_CLASS_SEX_F[0, 2]))
+	#print("Likelihood of survival F class 2: " + str(P_CLASS_SEX_F[1, 1]/P_CLASS_SEX_F[1, 2]))
+	#print("Likelihood of survival F class 3: " + str(P_CLASS_SEX_F[2, 1]/P_CLASS_SEX_F[2, 2]))
+	#print("Likelihood of survival M class 1: " + str(P_CLASS_SEX_M[0, 1]/P_CLASS_SEX_M[0, 2]))
+	#print("Likelihood of survival M class 2: " + str(P_CLASS_SEX_M[1, 1]/P_CLASS_SEX_M[1, 2]))
+	#print("Likelihood of survival M class 3: " + str(P_CLASS_SEX_M[2, 1]/P_CLASS_SEX_M[2, 2]))
+	
 	#check that likelihood of survival all F is the same that is counted from class;
 	#check posterio probability ? 
 	P_AGE = p_age(surv, age)
+	# spline to age curve? how to estimate accuracy of individual survivals
 	
 	plt.figure(1)
-	plt.plot(age, surv, 'g')
+	plt.plot(P_AGE[:, 0], P_AGE[:, 1]/P_AGE[:, 2], 'g')
+	print(P_AGE)
 	plt.show()
-
+	
 if __name__=="__main__":
 	main()
