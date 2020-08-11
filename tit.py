@@ -1,13 +1,13 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
-#testtt
+
 def readdata():
 	data = pd.read_csv("train.csv", delimiter=',', skiprows=0)
 
 	pid = data['PassengerId']
-	surv = np.asarray(data['Survived'])
-	pclass = np.asarray(data['Pclass'])
+	surv = data['Survived']
+	pclass = data['Pclass']
 	name = data['Name']
 	sex = data['Sex']
 	age = data['Age']
@@ -40,11 +40,21 @@ def p_sex(surv, sex) :
 def p_class_sex(surv, pclass, sex):
 	Pf  = np.transpose(np.array([[1 ,2 ,3], [0, 0 , 0], [0, 0, 0]])) #female: class, survived, all
 	Pm  = np.transpose(np.array([[1 ,2 ,3], [0, 0 , 0], [0, 0, 0]])) #male: class, survived, all
-	#for i, n in enumerate(sex):
-	#	if n=='female': 
-	#		pclass[i]-1
-	#	if n=='male':
-		
+	for i, n in enumerate(sex):
+		if n=='female': 
+			Pf[pclass[i]-1, 2] += 1
+			if surv[i]==1: Pf[pclass[i]-1, 1] += 1
+		if n=='male':
+			Pm[pclass[i]-1, 2] += 1
+			if surv[i]==1: Pm[pclass[i]-1, 1] += 1
+	return Pf, Pm 
+	
+def p_age(surv, age):
+	P = np.transpose(np.array([[0]*100, [0]*100, [0]*100])) #survived, all
+	for i, n in enumerate(age):
+		print(age)
+	return P #survived, all
+	
 def main():
 	pid, surv, pclass, name, sex, age, sib, parch, ticket, fare, cabin, embark = readdata()
 	P_CLASS = p_pclass(surv, pclass)
@@ -53,17 +63,21 @@ def main():
 	print("Likelihood of survival in 3. class: " + str(P_CLASS[2, 1]/P_CLASS[2, 2]))
 	P_SEX = p_sex(surv, sex)
 	print("\nLikelihood of survival F: " + str(P_SEX[0, 0]/P_SEX[0, 1]))
-	print("Likelihood of survival M: " + str(P_SEX[1, 0]/P_SEX[1, 1])+"\n")
-	P_CLASS_SEX = p_class_sex(surv, pclass, sex)
+	print("Likelihood of survival M: " + str(P_SEX[1, 0]/P_SEX[1, 1]))
+	P_CLASS_SEX_F, P_CLASS_SEX_M = p_class_sex(surv, pclass, sex)
+	print("\nLikelihood of survival F class 1: " + str(P_CLASS_SEX_F[0, 1]/P_CLASS_SEX_F[0, 2]))
+	print("Likelihood of survival F class 2: " + str(P_CLASS_SEX_F[1, 1]/P_CLASS_SEX_F[1, 2]))
+	print("Likelihood of survival F class 3: " + str(P_CLASS_SEX_F[2, 1]/P_CLASS_SEX_F[2, 2]))
+	print("Likelihood of survival M class 1: " + str(P_CLASS_SEX_M[0, 1]/P_CLASS_SEX_M[0, 2]))
+	print("Likelihood of survival M class 2: " + str(P_CLASS_SEX_M[1, 1]/P_CLASS_SEX_M[1, 2]))
+	print("Likelihood of survival M class 3: " + str(P_CLASS_SEX_M[2, 1]/P_CLASS_SEX_M[2, 2]))
+	#check that likelihood of survival all F is the same that is counted from class;
+	#check posterio probability ? 
+	P_AGE = p_age(surv, age)
 	
-	#print("\nLikelihood of survival F in the 1 calss: " + str(P_SEX[0, 0]/P_SEX[0, 1]))
-	#print("Likelihood of survival M: " + str(P_SEX[1, 0]/P_SEX[1, 1])+"\n")
-	
-	
-	
-	#plt.figure(1)
-	#plt.plot(pid, pclass, 'g')
-	#plt.show()
+	plt.figure(1)
+	plt.plot(age, surv, 'g')
+	plt.show()
 
 if __name__=="__main__":
 	main()
