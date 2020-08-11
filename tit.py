@@ -87,8 +87,9 @@ def main():
 	# spline to age curve? how to estimate accuracy of individual survivals
 	
 	plt.figure(1)
-	plt.plot(P_AGE[:, 0], P_AGE[:, 1]/P_AGE[:, 2], 'g')
-	print(P_AGE)
+	plt.plot(P_AGE[:, 0], P_AGE[:, 1], 'g')
+	plt.plot(P_AGE[:, 0], P_AGE[:, 2], 'b')
+	#print(P_AGE)
 	plt.show()
 	
 if __name__=="__main__":
